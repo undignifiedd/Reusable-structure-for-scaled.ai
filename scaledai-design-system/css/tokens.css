@@ -1,0 +1,102 @@
+/* =========================================================================
+   scaledai design tokens
+   Extracted from the computed :root of Care Assist / Scaled Operations /
+   Allocation Assist.
+
+   Every color is stored as bare HSL channels ("H S% L%") and consumed as
+   hsl(var(--token)). That convention is what makes the `/ <alpha>` slash
+   syntax work. Hex is given in comments for design handoff only.
+   ========================================================================= */
+
+:root {
+  /* ---- Brand ---------------------------------------------------------- */
+  --primary:                    24 95% 53%;    /* #F97015 — signature orange */
+  --primary-foreground:          0 0% 100%;    /* #FFFFFF */
+  --ring:                       24 95% 53%;    /* #F97015 — same as primary */
+  --accent:                     24 100% 96%;   /* #FFF3EB — orange tint wash */
+  --accent-foreground:          24 95% 45%;    /* #E05D06 — darkened for AA text */
+
+  /* ---- Surfaces & text ------------------------------------------------ */
+  --background:                  0 0% 100%;    /* #FFFFFF */
+  --foreground:                  0 0% 8%;      /* #141414 — near-black, not pure */
+  --card:                        0 0% 100%;    /* #FFFFFF */
+  --card-foreground:             0 0% 8%;      /* #141414 */
+  --popover:                     0 0% 100%;    /* #FFFFFF */
+  --popover-foreground:          0 0% 8%;      /* #141414 */
+  --secondary:                 220 14% 96%;    /* #F3F4F6 */
+  --secondary-foreground:        0 0% 8%;      /* #141414 */
+  --muted:                     220 14% 96%;    /* #F3F4F6 — identical to secondary */
+  --muted-foreground:            0 0% 35%;     /* #595959 */
+  --border:                    220 13% 91%;    /* #E5E7EB */
+  --input:                     220 13% 91%;    /* #E5E7EB — identical to border */
+  --destructive:                 0 72% 51%;    /* #DC2828 */
+  --destructive-foreground:      0 0% 100%;    /* #FFFFFF */
+
+  /* ---- Status — presence + async state -------------------------------- */
+  --online:                    142 71% 45%;    /* #21C45D */
+  --offline:                   220  9% 70%;    /* #ACB0B9 */
+  --away:                       45 93% 47%;    /* #E7B008 */
+  --pending:                   213 94% 50%;    /* #0874F7 */
+
+  /* ---- Conversation surfaces (Care Assist chat) ----------------------- */
+  --chat-bubble-user:                    24 95% 53%;   /* #F97015 */
+  --chat-bubble-user-foreground:          0 0% 100%;   /* #FFFFFF */
+  --chat-bubble-visitor:                220 14% 96%;   /* #F3F4F6 */
+  --chat-bubble-visitor-foreground:       0 0% 8%;     /* #141414 */
+
+  /* ---- Sidebar — its own scale, slightly off the main surface set ----- */
+  --sidebar-background:          0 0% 98%;     /* #FAFAFA */
+  --sidebar-foreground:          0 0% 15%;     /* #262626 */
+  --sidebar-primary:            24 95% 53%;    /* #F97015 */
+  --sidebar-primary-foreground:  0 0% 100%;    /* #FFFFFF */
+  --sidebar-accent:             24 100% 96%;   /* #FFF3EB */
+  --sidebar-accent-foreground:  24 95% 40%;    /* #C75305 */
+  --sidebar-border:            220 13% 91%;    /* #E5E7EB */
+  --sidebar-ring:               24 95% 53%;    /* #F97015 */
+
+  /* ---- Radius — one base, derive the rest ----------------------------- */
+  --radius:     1.25rem;                       /* 20px — base */
+  --radius-lg:  var(--radius);                 /* 20px */
+  --radius-md:  calc(var(--radius) - 0.25rem); /* 16px */
+  --radius-sm:  calc(var(--radius) - 0.5rem);  /* 12px */
+  --radius-xs:  calc(var(--radius) - 0.75rem); /*  8px */
+  --radius-full: 9999px;                       /* pills, avatars */
+
+  /* ---- Elevation — very low alpha (3–6%) ------------------------------ */
+  --shadow-sm:   0 1px 2px 0 hsl(0 0% 0% / .03);
+  --shadow-md:   0 4px 6px -1px hsl(0 0% 0% / .05),
+                 0 2px 4px -2px hsl(0 0% 0% / .03);
+  --shadow-lg:   0 10px 15px -3px hsl(0 0% 0% / .06),
+                 0 4px 6px -4px hsl(0 0% 0% / .04);
+  --shadow-glow: 0 0 20px hsl(var(--primary) / .2);
+
+  /* ---- Type ----------------------------------------------------------- */
+  --font-sans: Inter, system-ui, sans-serif;
+  --leading-base: 1.5;
+  --tracking-base: 0.01em;  /* applied globally via *, see base layer */
+}
+
+/* ---- Base layer: the two global rules the stack relies on ------------- */
+html,
+:host {
+  font-family: var(--font-sans);
+  line-height: var(--leading-base);
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+  -webkit-tap-highlight-color: transparent;
+}
+
+* {
+  border-color: hsl(var(--border));
+  letter-spacing: var(--tracking-base);
+}
+
+/* ---- Embed mode: widget must not paint its own background ------------- */
+html.widget-embed-mode,
+html.widget-embed-mode body,
+html.widget-embed-mode #root {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* TODO: no .dark block exists — every token above is light-only. */
