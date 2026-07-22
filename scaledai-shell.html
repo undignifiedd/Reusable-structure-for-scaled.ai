@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>scaledai shell — reusable property boilerplate</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<!--
+  ============================================================================
+  scaledai PROPERTY SHELL — generic, reusable boilerplate.
+  Copy this file, then change ONLY:
+    1. the --accent / --sidebar HSL values in :root  (re-skin the brand hue)
+    2. the brand block text + logo icon
+    3. the nav labels + the domain group nouns
+    4. the page-body copy
+  Change nothing structural. Everything below maps to the shared-structure spec.
+  ============================================================================
+-->
+<script>
+  // Section 3 — semantic tokens only. No hardcoded hex in markup.
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          sidebar: 'hsl(var(--sidebar))',
+          'sidebar-foreground': 'hsl(var(--sidebar-foreground))',
+          card: 'hsl(var(--card))',
+          muted: 'hsl(var(--muted))',
+          'muted-foreground': 'hsl(var(--muted-foreground))',
+          border: 'hsl(var(--border))',
+          ink: 'hsl(var(--ink))',
+          accent: 'hsl(var(--accent))',
+          'accent-foreground': 'hsl(var(--accent-foreground))',
+          // state hues — used by icon chips, stat tiles, and status pills
+          red: 'hsl(var(--st-red))',
+          amber: 'hsl(var(--st-amber))',
+          blue: 'hsl(var(--st-blue))',
+          green: 'hsl(var(--st-green))',
+          violet: 'hsl(var(--st-violet))',
+          teal: 'hsl(var(--st-teal))',
+        },
+        borderRadius: { '3xl': '1.5rem', 'xl': '0.75rem' },
+      },
+    },
+  };
+</script>
+<style>
+  :root {
+    /* ---- brand: change these two lines to re-skin the whole property ---- */
+    --sidebar: 162 42% 20%;         /* deep brand color — the sidebar panel   */
+    --accent:  160 55% 38%;         /* brighter brand — buttons, active states */
+
+    --sidebar-foreground: 0 0% 100%;
+    --accent-foreground: 0 0% 100%;
+    --card: 0 0% 100%;
+    --muted: 210 20% 94%;
+    --muted-foreground: 215 14% 46%;
+    --border: 215 18% 72%;
+    --ink: 215 28% 17%;
+    --st-red: 0 72% 51%;
+    --st-amber: 34 92% 48%;
+    --st-blue: 217 91% 60%;
+    --st-green: 152 55% 42%;
+    --st-violet: 262 68% 60%;
+    --st-teal: 175 60% 40%;
+  }
+  html, body { height: 100%; }
+
+  /* sidebar collapse is driven by data-state on the wrapper (section 4 states) */
+  [data-sidebar-wrapper][data-state="collapsed"] aside { width: var(--sidebar-icon); }
+  [data-sidebar-wrapper][data-state="collapsed"] .sb-hide { display: none !important; }
+  [data-sidebar-wrapper][data-state="collapsed"] .sb-nav-item { justify-content: center; }
+  [data-sidebar-wrapper][data-state="collapsed"] .sb-brand { justify-content: center; }
+
+  .nav-group[data-open="false"] .nav-group-body { display: none; }
+  .nav-group[data-open="false"] .nav-chevron { transform: rotate(-90deg); }
+  kbd { font-family: inherit; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: hsl(var(--border) / .6); border-radius: 999px; }
+</style>
+</head>
+<body class="bg-muted/40 text-ink antialiased">
+
+<!-- ============ ROOT WRAPPER (section 2) ============ -->
+<div data-sidebar-wrapper data-state="expanded"
+     class="group/sidebar-wrapper flex min-h-svh w-full"
+     style="--sidebar-width: 16rem; --sidebar-icon: 3.25rem;">
+
+  <!-- content column: sidebar + main are siblings, both floating panels w/ gap-2 -->
+  <div class="h-screen w-full flex bg-muted/40 overflow-hidden gap-2 p-2">
+
+    <!-- ============ SIDEBAR — floating brand-color panel (section 4) ============ -->
+    <aside data-state="expanded" data-collapsible data-side="left"
+           style="width: var(--sidebar-width);"
+           class="shrink-0 flex flex-col rounded-3xl bg-sidebar text-sidebar-foreground shadow-lg overflow-hidden transition-[width] duration-200">
+
+      <!-- 1. Brand block -->
+      <div class="sb-brand flex items-center gap-3 px-4 pt-4 pb-3">
+        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15">
+          <i data-lucide="hexagon" class="h-5 w-5"></i>
+        </span>
+        <div class="sb-hide min-w-0">
+          <div class="text-sm font-semibold leading-tight truncate">Property Name</div>
+          <div class="text-xs text-white/60 truncate">One-line tagline here</div>
+        </div>
+      </div>
+
+      <!-- 2. Quick jump -->
+      <div class="sb-hide px-3 pb-3">
+        <button class="w-full flex items-center gap-2 rounded-xl bg-white/10 hover:bg-white/15 px-3 py-2 text-sm text-white/70">
+          <i data-lucide="search" class="h-4 w-4"></i>
+          <span>Quick jump…</span>
+          <kbd class="ml-auto text-[10px] rounded bg-white/10 px-1.5 py-0.5">⌘K</kbd>
+        </button>
+      </div>
+
+      <!-- 3. Nav groups -->
+      <nav class="flex-1 overflow-y-auto px-2.5 pb-2 space-y-4">
+
+        <!-- Overview group -->
+        <div class="nav-group" data-open="true">
+          <button onclick="toggleGroup(this)" class="w-full flex items-center gap-2 px-2 py-1 text-[11px] font-medium uppercase tracking-wider text-white/50">
+            <span class="h-1.5 w-1.5 rounded-full bg-white/60"></span>
+            <span class="sb-hide">Overview</span>
+            <i data-lucide="chevron-down" class="nav-chevron sb-hide ml-auto h-3.5 w-3.5 transition-transform"></i>
+          </button>
+          <div class="nav-group-body mt-1 space-y-0.5">
+            <a href="#" data-active="true" onclick="pick(this,event)"
+               class="sb-nav-item flex items-center gap-3 rounded-xl px-2.5 py-2 text-sm hover:bg-white/10 data-[active=true]:bg-white/15 data-[active=true]:font-medium">
+              <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-teal/25"><i data-lucide="layout-dashboard" class="h-4 w-4"></i></span>
+              <span class="sb-hide truncate">Dashboard</span>
+              <span class="sb-hide ml-auto rounded-full bg-white/15 px-2 py-0.5 text-[11px]">99+</span>
+            </a>
+            <a href="#" onclick="pick(this,event)" class="sb-nav-item flex items-center gap-3 rounded-xl px-2.5 py-2 text-sm hover:bg-white/10">
+              <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-violet/25"><i data-lucide="book-open" class="h-4 w-4"></i></span>
+              <span class="sb-hide truncate">Documentation</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- DOMAIN group — rename this label + these items per property -->
+        <div class="nav-group" data-open="true">
+          <button onclick="toggleGroup(this)" class="w-full flex items-center gap-2 px-2 py-1 text-[11px] font-medium uppercase tracking-wider text-white/50">
+            <span class="h-1.5 w-1.5 rounded-full bg-white/60"></span>
+            <span class="sb-hide">Workspace</span>
+            <i data-lucide="chevron-down" class="nav-chevron sb-hide ml-auto h-3.5 w-3.5 transition-transform"></i>
+          </button>
+          <div class="nav-group-body mt-1 space-y-0.5">
+            <a href="#" onclick="pick(this,event)" class="sb-nav-item flex items-center gap-3 rounded-xl px-2.5 py-2 text-sm hover:bg-white/10">
+              <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue/25"><i data-lucide="folder" class="h-4 w-4"></i></span>
+              <span class="sb-hide truncate">Records</span>
+            </a>
+            <a href="#" onclick="pick(this,event)" class="sb-nav-item flex items-center gap-3 rounded-xl px-2.5 py-2 text-sm hover:bg-white/10">
+              <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber/25"><i data-lucide="workflow" class="h-4 w-4"></i></span>
+              <span class="sb-hide truncate">Pipeline</span>
+            </a>
+            <a href="#" onclick="pick(this,event)" class="sb-nav-item flex items-center gap-3 rounded-xl px-2.5 py-2 text-sm hover:bg-white/10">
+              <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-green/25"><i data-lucide="layout-template" class="h-4 w-4"></i></span>
+              <span class="sb-hide truncate">Templates</span>
+            </a>
+            <a href="#" onclick="pick(this,event)" class="sb-nav-item flex items-center gap-3 rounded-xl px-2.5 py-2 text-sm hover:bg-white/10">
+              <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-red/25"><i data-lucide="message-square" class="h-4 w-4"></i></span>
+              <span class="sb-hide truncate">Messages</span>
+              <span class="sb-hide ml-auto rounded-full bg-white/15 px-2 py-0.5 text-[11px]">2</span>
+            </a>
+            <a href="#" onclick="pick(this,event)" class="sb-nav-item flex items-center gap-3 rounded-xl px-2.5 py-2 text-sm hover:bg-white/10">
+              <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-teal/25"><i data-lucide="bar-chart-3" class="h-4 w-4"></i></span>
+              <span class="sb-hide truncate">Reports</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Account group -->
+        <div class="nav-group" data-open="true">
+          <button onclick="toggleGroup(this)" class="w-full flex items-center gap-2 px-2 py-1 text-[11px] font-medium uppercase tracking-wider text-white/50">
+            <span class="h-1.5 w-1.5 rounded-full bg-white/60"></span>
+            <span class="sb-hide">Account</span>
+            <i data-lucide="chevron-down" class="nav-chevron sb-hide ml-auto h-3.5 w-3.5 transition-transform"></i>
+          </button>
+          <div class="nav-group-body mt-1 space-y-0.5">
+            <a href="#" onclick="pick(this,event)" class="sb-nav-item flex items-center gap-3 rounded-xl px-2.5 py-2 text-sm hover:bg-white/10">
+              <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-violet/25"><i data-lucide="settings" class="h-4 w-4"></i></span>
+              <span class="sb-hide truncate">Settings</span>
+            </a>
+            <a href="#" onclick="pick(this,event)" class="sb-nav-item flex items-center gap-3 rounded-xl px-2.5 py-2 text-sm hover:bg-white/10">
+              <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-teal/25"><i data-lucide="credit-card" class="h-4 w-4"></i></span>
+              <span class="sb-hide truncate">Subscription</span>
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <!-- 4. Account footer -->
+      <div class="border-t border-white/10 p-3">
+        <div class="flex items-center gap-3">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 text-xs font-semibold">AD</span>
+          <div class="sb-hide min-w-0 flex-1">
+            <div class="text-sm font-medium truncate">admin@example.com</div>
+            <div class="text-xs text-white/60 truncate">Account & Integrations</div>
+          </div>
+        </div>
+        <button class="sb-hide mt-2 w-full flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-sm text-white/70 hover:bg-white/10">
+          <i data-lucide="log-out" class="h-4 w-4"></i> Sign out
+        </button>
+      </div>
+    </aside>
+
+    <!-- ============ MAIN COLUMN (section 2) ============ -->
+    <div class="flex-1 flex flex-col min-w-0 min-h-0 gap-2">
+
+      <!-- HEADER (section 5) -->
+      <header class="h-[52px] flex items-center justify-between bg-card px-3 sm:px-4 shrink-0 rounded-3xl border border-border/40 shadow-sm">
+        <div class="flex items-center gap-2 min-w-0">
+          <button onclick="toggleSidebar()" class="flex h-8 w-8 items-center justify-center rounded-xl hover:bg-muted/60">
+            <i data-lucide="panel-left" class="h-4 w-4"></i>
+          </button>
+          <nav class="flex items-center gap-1.5 text-sm text-muted-foreground min-w-0">
+            <i data-lucide="home" class="h-4 w-4 shrink-0"></i>
+            <i data-lucide="chevron-right" class="h-3.5 w-3.5 shrink-0"></i>
+            <span class="shrink-0">Section</span>
+            <i data-lucide="chevron-right" class="h-3.5 w-3.5 shrink-0"></i>
+            <span class="text-ink font-medium truncate">Page</span>
+          </nav>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="hidden md:flex items-center gap-1.5 text-xs text-muted-foreground">
+            <i data-lucide="refresh-cw" class="h-3.5 w-3.5"></i> Synced 1h ago
+          </span>
+          <button onclick="toast('Tour','Starting product tour…')" class="hidden sm:flex items-center gap-1.5 rounded-xl border border-border/40 px-3 h-8 text-sm hover:bg-muted/60">
+            <i data-lucide="compass" class="h-4 w-4"></i> Tour
+          </button>
+          <button class="hidden lg:flex items-center gap-2 rounded-xl border border-border/40 px-3 h-8 text-sm text-muted-foreground hover:bg-muted/60">
+            <i data-lucide="search" class="h-4 w-4"></i> Search
+            <kbd class="text-[10px] rounded border border-border/40 px-1.5 py-0.5 bg-muted/40">⌘K</kbd>
+          </button>
+          <!-- optional segmented toggle -->
+          <div class="hidden sm:flex items-center rounded-xl border border-border/40 p-0.5 text-sm">
+            <button onclick="seg(this,'View A')" data-on="true" class="seg rounded-lg px-2.5 py-1 data-[on=true]:bg-accent data-[on=true]:text-accent-foreground">View A</button>
+            <button onclick="seg(this,'View B')" class="seg rounded-lg px-2.5 py-1 data-[on=true]:bg-accent data-[on=true]:text-accent-foreground">View B</button>
+          </div>
+          <button class="hidden sm:flex items-center gap-1.5 rounded-xl border border-border/40 px-3 h-8 text-sm hover:bg-muted/60">
+            <i data-lucide="download" class="h-4 w-4"></i> Export
+          </button>
+          <button class="relative flex h-8 w-8 items-center justify-center rounded-xl border border-border/40 hover:bg-muted/60">
+            <i data-lucide="bell" class="h-4 w-4"></i>
+            <span class="absolute -top-1 -right-1 rounded-full bg-red text-white text-[10px] leading-none px-1 py-0.5">9</span>
+          </button>
+          <button class="flex h-8 w-8 items-center justify-center rounded-xl border border-border/40 hover:bg-muted/60"><i data-lucide="settings" class="h-4 w-4"></i></button>
+        </div>
+      </header>
+
+      <!-- BODY — the ONLY scrolling region (section 2) -->
+      <div class="flex-1 flex flex-col min-h-0 rounded-3xl border border-border/40 bg-card shadow-lg overflow-hidden">
+        <div class="flex-1 overflow-y-auto px-4 lg:px-6 py-5 space-y-5">
+
+          <!-- 6a. Title block -->
+          <div class="flex flex-wrap items-start justify-between gap-4">
+            <div class="flex items-start gap-3">
+              <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-accent/10"><i data-lucide="workflow" class="h-5 w-5 text-accent"></i></span>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h1 class="text-2xl font-semibold tracking-tight">Page Title</h1>
+                  <i data-lucide="circle-help" class="h-4 w-4 text-muted-foreground"></i>
+                </div>
+                <p class="text-sm text-muted-foreground max-w-xl mt-0.5">One or two lines of description explaining what this page tracks. Replace with real copy per property.</p>
+              </div>
+            </div>
+            <!-- primary action + stat tiles -->
+            <div class="flex items-center gap-3">
+              <button onclick="toast('Action','Primary action triggered.')" class="flex items-center gap-2 rounded-xl bg-accent text-accent-foreground px-4 h-10 text-sm shadow-sm hover:opacity-90">
+                <i data-lucide="play" class="h-4 w-4"></i> Primary action
+              </button>
+              <div class="hidden xl:flex items-center gap-2">
+                <div class="rounded-xl border border-border/40 px-3 py-1.5 text-center min-w-[72px]"><div class="text-[10px] uppercase tracking-wide text-muted-foreground">Active</div><div class="text-xl font-semibold text-green">85</div></div>
+                <div class="rounded-xl border border-border/40 px-3 py-1.5 text-center min-w-[72px]"><div class="text-[10px] uppercase tracking-wide text-muted-foreground">Complete</div><div class="text-xl font-semibold text-blue">36</div></div>
+                <div class="rounded-xl border border-border/40 px-3 py-1.5 text-center min-w-[72px]"><div class="text-[10px] uppercase tracking-wide text-muted-foreground">Paused</div><div class="text-xl font-semibold text-amber">0</div></div>
+                <div class="rounded-xl border border-border/40 px-3 py-1.5 text-center min-w-[72px]"><div class="text-[10px] uppercase tracking-wide text-muted-foreground">Failed</div><div class="text-xl font-semibold text-red">0</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notice banner (section 7) -->
+          <div class="flex items-start gap-3 rounded-xl bg-amber/10 p-3">
+            <i data-lucide="triangle-alert" class="h-4 w-4 text-amber mt-0.5 shrink-0"></i>
+            <p class="text-sm"><span class="font-semibold">Notice lead-in.</span> Body text for a status or informational banner. Tinted background at 10%, rounded-xl. Swap tint per severity.</p>
+          </div>
+
+          <!-- 6b. Pipeline tabs -->
+          <div class="space-y-3">
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="tab(this)" data-on="true" class="pl-tab flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm border border-border/40 data-[on=true]:bg-accent data-[on=true]:text-accent-foreground data-[on=true]:border-transparent">
+                Stage One <span class="rounded-full bg-black/10 px-1.5 text-xs">86</span>
+              </button>
+              <button onclick="tab(this)" class="pl-tab flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm border border-border/40 hover:bg-muted/60">Stage Two <span class="rounded-full bg-muted/60 px-1.5 text-xs">12</span></button>
+              <button onclick="tab(this)" class="pl-tab flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm border border-border/40 hover:bg-muted/60">Stage Three <span class="rounded-full bg-muted/60 px-1.5 text-xs">10</span></button>
+              <button onclick="tab(this)" class="pl-tab flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm border border-border/40 hover:bg-muted/60">Stage Four <span class="rounded-full bg-muted/60 px-1.5 text-xs">6</span></button>
+              <button onclick="tab(this)" class="pl-tab flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm border border-border/40 hover:bg-muted/60">Stage Five <span class="rounded-full bg-muted/60 px-1.5 text-xs">1</span></button>
+            </div>
+            <!-- secondary control bar, scoped to the active tab -->
+            <div class="flex items-center gap-1 rounded-xl border border-border/40 p-1.5">
+              <button class="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-sm hover:bg-muted/60"><i data-lucide="layers" class="h-4 w-4"></i> Tool One</button>
+              <button class="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-sm hover:bg-muted/60"><i data-lucide="settings-2" class="h-4 w-4"></i> Tool Two</button>
+              <div class="ml-auto text-xs text-muted-foreground pr-1">Showing 4 of 86</div>
+            </div>
+          </div>
+
+          <!-- Content card: heading + description + floating primary + flow strip -->
+          <div class="relative rounded-xl border border-border/40 p-4 space-y-4">
+            <button class="absolute top-4 right-4 flex items-center gap-2 rounded-xl bg-accent text-accent-foreground px-3 h-9 text-sm shadow-sm hover:opacity-90">
+              <i data-lucide="send" class="h-4 w-4"></i> Primary action
+            </button>
+            <div class="pr-40">
+              <h2 class="text-lg font-semibold">Section Heading</h2>
+              <p class="text-sm text-muted-foreground max-w-2xl mt-1">Longer descriptive paragraph for the section. Explains the behavior of this stage or flow. Keep it to two or three lines.</p>
+            </div>
+
+            <!-- 6d. Flow / step strip -->
+            <div class="rounded-xl border border-border/40 p-4">
+              <div class="text-[11px] uppercase tracking-wider text-muted-foreground mb-3">Default flow</div>
+              <div class="flex items-center gap-2 overflow-x-auto pb-1">
+                <div class="shrink-0 rounded-xl border border-border/40 bg-blue/5 p-3 min-w-[140px]">
+                  <div class="flex items-center gap-1.5 text-[11px] uppercase text-blue"><i data-lucide="zap" class="h-3.5 w-3.5"></i> Trigger</div>
+                  <div class="text-sm font-medium mt-1">Step name</div>
+                  <div class="text-xs text-muted-foreground">meta</div>
+                </div>
+                <i data-lucide="chevron-right" class="h-4 w-4 text-muted-foreground shrink-0"></i>
+                <div class="shrink-0 rounded-xl border border-border/40 bg-green/5 p-3 min-w-[140px]">
+                  <div class="flex items-center gap-1.5 text-[11px] uppercase text-green"><i data-lucide="mail" class="h-3.5 w-3.5"></i> Step</div>
+                  <div class="text-sm font-medium mt-1">Step name</div>
+                  <div class="text-xs text-muted-foreground">meta</div>
+                </div>
+                <i data-lucide="chevron-right" class="h-4 w-4 text-muted-foreground shrink-0"></i>
+                <div class="shrink-0 rounded-xl border border-border/40 bg-green/5 p-3 min-w-[140px]">
+                  <div class="flex items-center gap-1.5 text-[11px] uppercase text-green"><i data-lucide="mail" class="h-3.5 w-3.5"></i> Step</div>
+                  <div class="text-sm font-medium mt-1">Step name</div>
+                  <div class="text-xs text-muted-foreground">meta</div>
+                </div>
+                <i data-lucide="chevron-right" class="h-4 w-4 text-muted-foreground shrink-0"></i>
+                <div class="shrink-0 rounded-xl border border-border/40 bg-violet/5 p-3 min-w-[140px]">
+                  <div class="flex items-center gap-1.5 text-[11px] uppercase text-violet"><i data-lucide="clock" class="h-3.5 w-3.5"></i> Wait</div>
+                  <div class="text-sm font-medium mt-1">Awaiting response</div>
+                  <div class="text-xs text-muted-foreground">+7 days</div>
+                </div>
+                <i data-lucide="chevron-right" class="h-4 w-4 text-muted-foreground shrink-0"></i>
+                <div class="shrink-0 rounded-xl border border-border/40 bg-amber/5 p-3 min-w-[140px]">
+                  <div class="flex items-center gap-1.5 text-[11px] uppercase text-amber"><i data-lucide="check-check" class="h-3.5 w-3.5"></i> Complete</div>
+                  <div class="text-sm font-medium mt-1">Step name</div>
+                  <div class="text-xs text-muted-foreground">meta</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6c. List / detail — table variant -->
+          <div class="rounded-xl border border-border/40 overflow-hidden">
+            <div class="px-4 py-2.5 text-[11px] uppercase tracking-wider text-muted-foreground border-b border-border/40">Items in this stage (86)</div>
+            <table class="w-full text-sm">
+              <thead class="text-muted-foreground">
+                <tr class="border-b border-border/40">
+                  <th class="text-left font-medium px-4 py-2.5">Name</th>
+                  <th class="text-left font-medium px-4 py-2.5">Stage</th>
+                  <th class="text-left font-medium px-4 py-2.5">Group</th>
+                  <th class="text-left font-medium px-4 py-2.5">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-border/40 hover:bg-muted/40">
+                  <td class="px-4 py-3"><div class="flex items-center gap-2"><span class="flex h-7 w-7 items-center justify-center rounded-lg bg-red/10 text-red text-[11px] font-semibold">01</span> Record name one</div></td>
+                  <td class="px-4 py-3 text-muted-foreground">Stage One</td>
+                  <td class="px-4 py-3 text-muted-foreground">Group A</td>
+                  <td class="px-4 py-3"><span class="rounded-full bg-red/10 text-red px-2.5 py-0.5 text-xs">Urgent</span></td>
+                </tr>
+                <tr class="border-b border-border/40 hover:bg-muted/40">
+                  <td class="px-4 py-3"><div class="flex items-center gap-2"><span class="flex h-7 w-7 items-center justify-center rounded-lg bg-amber/10 text-amber text-[11px] font-semibold">02</span> Record name two</div></td>
+                  <td class="px-4 py-3 text-muted-foreground">Stage One</td>
+                  <td class="px-4 py-3 text-muted-foreground">Group B</td>
+                  <td class="px-4 py-3"><span class="rounded-full bg-amber/10 text-amber px-2.5 py-0.5 text-xs">In progress</span></td>
+                </tr>
+                <tr class="border-b border-border/40 hover:bg-muted/40">
+                  <td class="px-4 py-3"><div class="flex items-center gap-2"><span class="flex h-7 w-7 items-center justify-center rounded-lg bg-blue/10 text-blue text-[11px] font-semibold">03</span> Record name three</div></td>
+                  <td class="px-4 py-3 text-muted-foreground">Stage One</td>
+                  <td class="px-4 py-3 text-muted-foreground">Group A</td>
+                  <td class="px-4 py-3"><span class="rounded-full bg-blue/10 text-blue px-2.5 py-0.5 text-xs">Idle</span></td>
+                </tr>
+                <tr class="hover:bg-muted/40">
+                  <td class="px-4 py-3"><div class="flex items-center gap-2"><span class="flex h-7 w-7 items-center justify-center rounded-lg bg-green/10 text-green text-[11px] font-semibold">04</span> Record name four</div></td>
+                  <td class="px-4 py-3 text-muted-foreground">Stage One</td>
+                  <td class="px-4 py-3 text-muted-foreground">Group C</td>
+                  <td class="px-4 py-3"><span class="rounded-full bg-green/10 text-green px-2.5 py-0.5 text-xs">Done</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Empty state (section 7) -->
+          <div class="rounded-xl border border-dashed border-border/40 p-8 flex flex-col items-center text-center gap-2">
+            <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10"><i data-lucide="inbox" class="h-6 w-6 text-accent"></i></span>
+            <div class="font-medium">Empty state heading</div>
+            <div class="text-sm text-muted-foreground">One line of direction telling the user what goes here.</div>
+            <button class="mt-1 rounded-xl border border-border/40 px-3 py-1.5 text-sm hover:bg-muted/60">Primary action</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating action + feedback pill (section 7) -->
+  <div class="fixed bottom-4 right-4 flex flex-col items-end gap-2 z-40">
+    <button class="rounded-xl border border-border/40 bg-card px-3 py-1.5 text-sm shadow-sm hover:bg-muted/60 flex items-center gap-1.5">
+      <i data-lucide="message-circle" class="h-4 w-4"></i> Feedback
+    </button>
+    <button onclick="toast('Assistant','How can I help?')" class="rounded-xl bg-accent text-accent-foreground px-4 py-2.5 text-sm shadow-lg hover:opacity-90 flex items-center gap-2">
+      <i data-lucide="sparkles" class="h-4 w-4"></i> Assistant
+    </button>
+  </div>
+</div>
+
+<!-- Toast host (sonner-style, top-right) -->
+<div id="toast-host" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+<script>
+  lucide.createIcons();
+
+  function toggleSidebar() {
+    const w = document.querySelector('[data-sidebar-wrapper]');
+    const next = w.dataset.state === 'expanded' ? 'collapsed' : 'expanded';
+    w.dataset.state = next;
+    w.querySelector('aside').dataset.state = next;
+  }
+  function toggleGroup(btn) {
+    const g = btn.closest('.nav-group');
+    g.dataset.open = g.dataset.open === 'true' ? 'false' : 'true';
+  }
+  function pick(el, e) {
+    e.preventDefault();
+    document.querySelectorAll('.sb-nav-item').forEach(a => a.removeAttribute('data-active'));
+    el.setAttribute('data-active', 'true');
+  }
+  function seg(btn, label) {
+    btn.parentElement.querySelectorAll('.seg').forEach(b => b.removeAttribute('data-on'));
+    btn.setAttribute('data-on', 'true');
+    toast('View', 'Switched to ' + label + '.');
+  }
+  function tab(btn) {
+    document.querySelectorAll('.pl-tab').forEach(b => b.removeAttribute('data-on'));
+    btn.setAttribute('data-on', 'true');
+  }
+  function toast(title, msg) {
+    const host = document.getElementById('toast-host');
+    const el = document.createElement('div');
+    el.className = 'rounded-xl border border-border/40 bg-card shadow-lg px-4 py-3 text-sm w-72 opacity-0 translate-x-2 transition-all';
+    el.innerHTML = '<div class="font-medium">' + title + '</div><div class="text-muted-foreground">' + msg + '</div>';
+    host.appendChild(el);
+    requestAnimationFrame(() => { el.style.opacity = '1'; el.style.transform = 'translateX(0)'; });
+    setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(8px)'; setTimeout(() => el.remove(), 200); }, 2600);
+  }
+</script>
+</body>
+</html>
